@@ -1,7 +1,7 @@
 import pygame as p
 import ChessEngine
 
-width = height = 512
+width = height = 704
 dimension = 8
 square_size = height // dimension
 max_fps = 15 # for animation later on
@@ -28,7 +28,6 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState() #Game state from ChessEngine.py file
-    print(gs.board)
     loadImages()
     running = True
     while running :

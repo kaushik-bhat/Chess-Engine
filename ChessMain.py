@@ -30,10 +30,28 @@ def main():
     gs = ChessEngine.GameState() #Game state from ChessEngine.py file
     loadImages()
     running = True
+    square_Selected = ()    #initially nothing, stores user input selected square (row,col) tuple format
+    player_Clicks = []  #keep track of player clicks [(r1,c1),(r2,c2),..] kind of a click log
     while running :
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos()    #x and y coordinates
+                col = location[0] // square_size  #x location is at 0 and y at 1
+                row = location[1] // square_size
+                if square_Selected == (row,col):
+                    square_Selected = ()    #same square clicked twice case
+                    player_Clicks = []
+                else:    
+                    square_Selected = (row,col)
+                    player_Clicks.append(square_Selected)
+                if len(player_Clicks) == 2: #basically after second click move should be registered, first click to select piece, second is where you want the piece to move 
+                    move = ChessEngine.Move(player_Clicks[0],player_Clicks[1],gs.board)
+                    print(move.getChessNotation())
+                    gs.makeMove(move)
+                    square_Selected = ()
+                    player_Clicks = []         
         drawGameState(screen,gs)
         clock.tick(max_fps)
         p.display.flip()

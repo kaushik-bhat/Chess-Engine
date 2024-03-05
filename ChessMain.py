@@ -36,6 +36,7 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            #MOUSE HANDLERS
             elif e.type == p.MOUSEBUTTONDOWN:
                 location = p.mouse.get_pos()    #x and y coordinates
                 col = location[0] // square_size  #x location is at 0 and y at 1
@@ -51,7 +52,13 @@ def main():
                     print(move.getChessNotation())
                     gs.makeMove(move)
                     square_Selected = ()
-                    player_Clicks = []         
+                    player_Clicks = []
+            #KEYBOARD HANDLERS
+            elif e.type == p.KEYDOWN:
+                keys = p.key.get_pressed()
+                if keys[p.K_LCTRL] or keys[p.K_RCTRL]:  #UNDO OPTION USING CTRL+Z
+                    if e.key == p.K_z:
+                        gs.undoMove()         
         drawGameState(screen,gs)
         clock.tick(max_fps)
         p.display.flip()

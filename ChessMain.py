@@ -56,8 +56,10 @@ def main():
                     if move in valid_Moves:
                         gs.makeMove(move)
                         move_Made = True
-                    square_Selected = ()
-                    player_Clicks = []
+                        square_Selected = ()
+                        player_Clicks = []
+                    else:
+                        player_Clicks = [square_Selected]
             #KEYBOARD HANDLERS
             elif e.type == p.KEYDOWN:
                 keys = p.key.get_pressed()

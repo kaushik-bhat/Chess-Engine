@@ -6,13 +6,16 @@ class GameState():
         self.board = [
             ["bR" , "bN" , "bB" , "bQ" , "bK" , "bB" , "bN" , "bR"],
             ["bp" , "bp" , "bp" , "bp" , "bp" , "bp" , "bp" , "bp"],
-            ["--" , "--" , "--" , "--" , "--" , "--" , "--" , "--"],
+            ["--" , "--" , "--" , "wp" , "--" , "--" , "--" , "--"],
             ["--" , "--" , "--" , "--" , "--" , "--" , "--" , "--"],
             ["--" , "--" , "--" , "--" , "--" , "--" , "--" , "--"],
             ["--" , "--" , "--" , "--" , "--" , "--" , "--" , "--"],
             ["wp" , "wp" , "wp" , "wp" , "wp" , "wp" , "wp" , "wp"],
             ["wR" , "wN" , "wB" , "wQ" , "wK" , "wB" , "wN" , "wR"]
         ]
+        
+        self.validMoveFunction = {'p':self.getPawnMoves,'R':self.getRookMoves,'N':self.getKnightMoves,
+                                  'B':self.getBishopMoves,'K':self.getKingMoves,'Q':self.getQueenMoves}
         
         self.whiteToMove = True
         self.moveLog = []
@@ -34,6 +37,69 @@ class GameState():
             self.board[move.end_Row][move.end_Col] = move.piece_Captured
             self.whiteToMove = not self.whiteToMove
             
+    #All moves considering checks
+    def getValidMoves(self):
+        return self.getAllPossibleMoves()
+    
+    #All moves without considering checks
+    def getAllPossibleMoves(self):
+        moves = []
+        for r in range(len(self.board)):    #number of rows is no of lists in 2D list
+            for c in range(len(self.board[r])): #number of columns is no of items in each list
+                turn = self.board[r][c][0]
+                if (turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
+                    piece = self.board[r][c][1]
+                    self.validMoveFunction[piece](r,c,moves)    #INSTEAD OF MULTIPLE IF ELSE FOR EACH PIECE
+        
+        return moves
+    
+    #Get all possible moves for the pawn at r,c and add to list moves
+    def getPawnMoves(self,r,c,moves):
+        if self.whiteToMove:    #WHITE pawn moves
+            if self.board[r-1][c] == "--":  #1 square pawn move
+                moves.append(Move((r,c),(r-1,c),self.board))
+                if r==6 and self.board[r-2][c] == "--": #2 square pawn move
+                    moves.append(Move((r,c),(r-2,c),self.board))
+            if c-1 >= 0: #capturing pieces to left
+                if self.board[r-1][c-1][0] == 'b':  #black enenmy piece to capture cause no point in white takes white
+                    moves.append(Move((r,c),(r-1,c-1),self.board))
+            if c+1 <= 7: #capturing pieces to right
+                if self.board[r-1][c+1][0] == 'b': 
+                    moves.append(Move((r,c),(r-1,c+1),self.board))
+                    
+        else:   #BLACK pawn moves
+            if self.board[r+1][c] == "--":  #1 square pawn move
+                moves.append(Move((r,c),(r+1,c),self.board))
+                if r==1 and self.board[r+2][c] == "--": #2 square pawn move
+                    moves.append(Move((r,c),(r+2,c),self.board))
+            if c-1 >= 0: #capturing pieces to right
+                if self.board[r+1][c-1][0] == 'w':  #white enemy piece to capture cause no point in black takes black
+                    moves.append(Move((r,c),(r+1,c-1),self.board))
+            if c+1 <= 7: #capturing pieces to left
+                if self.board[r+1][c+1][0] == 'w': 
+                    moves.append(Move((r,c),(r+1,c+1),self.board))
+    
+    #Get all possible moves for the Rook at r,c and add to list moves
+    def getRookMoves(self,r,c,moves):
+        pass
+    
+    #Get all possible moves for the Knight at r,c and add to list moves
+    def getKnightMoves(self,r,c,moves):
+        pass
+    
+    #Get all possible moves for the Bishop at r,c and add to list moves
+    def getBishopMoves(self,r,c,moves):
+        pass
+    
+    #Get all possible moves for the Queen at r,c and add to list moves
+    def getQueenMoves(self,r,c,moves):
+        pass
+    
+    #Get all possible moves for the King at r,c and add to list moves
+    def getKingMoves(self,r,c,moves):
+        pass
+                
+            
         
 class Move():
     
@@ -49,6 +115,14 @@ class Move():
         self.end_Col = end_square[1]
         self.piece_Moved = board[self.start_Row][self.start_Col]
         self.piece_Captured = board[self.end_Row][self.end_Col]
+        self.move_Id = self.start_Row*1000 + self.start_Col*100 + self.end_Row*10 + self.end_Col #a unique move id  
+        
+    #Overriding the equals method, cause we are using a class
+    def __eq__(self,other):
+        if isinstance(other,Move):
+            return self.move_Id == other.move_Id
+        return False
+            
     
     def getChessNotation(self):
         return self.getRankFile(self.start_Row,self.start_Col)+"-"+self.getRankFile(self.end_Row,self.end_Col)

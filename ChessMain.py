@@ -53,12 +53,13 @@ def main():
                     move = ChessEngine.Move(player_Clicks[0],player_Clicks[1],gs.board)
                     print(move.getChessNotation())  #move_Notation
                     #print(move.move_Id) #move_ID
-                    if move in valid_Moves:
-                        gs.makeMove(move)
-                        move_Made = True
-                        square_Selected = ()
-                        player_Clicks = []
-                    else:
+                    for i in range(len(valid_Moves)):
+                        if move == valid_Moves[i]:
+                            gs.makeMove(move)
+                            move_Made = True
+                            square_Selected = ()
+                            player_Clicks = []
+                    if not move_Made:
                         player_Clicks = [square_Selected]
             #KEYBOARD HANDLERS
             elif e.type == p.KEYDOWN:
